@@ -8,12 +8,14 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "pnpm --filter @veya/shared build && pnpm --filter @veya/backend build && pnpm --filter @veya/admin build",
+    "build": "pnpm --filter @veya/shared build && pnpm --filter @veya/backend build && pnpm --filter @veya/admin build && pnpm --filter @veya/app typecheck",
     "build:backend": "pnpm --filter @veya/backend build",
     "build:admin": "pnpm --filter @veya/admin build",
+    "build:app": "pnpm --filter @veya/app typecheck",
     "dev:backend": "pnpm --filter @veya/backend start:dev",
     "dev:admin": "pnpm --filter @veya/admin dev",
-    "typecheck": "pnpm --filter @veya/backend typecheck && pnpm --filter @veya/admin typecheck",
+    "dev:app": "pnpm --filter @veya/app start",
+    "typecheck": "pnpm --filter @veya/shared build && pnpm --filter @veya/backend typecheck && pnpm --filter @veya/admin typecheck && pnpm --filter @veya/app typecheck",
     "migration:run": "pnpm --filter @veya/backend migration:run",
     "seed": "pnpm --filter @veya/backend seed"
   }

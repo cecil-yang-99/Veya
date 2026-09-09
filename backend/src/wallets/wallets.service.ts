@@ -5,6 +5,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomUUID } from 'crypto';
 import { verifyMessage } from 'ethers';
@@ -31,6 +32,14 @@ export function buildSignInMessage(address: string, nonce: string): string {
   ].join('\n');
 }
 
+/** Development-only signature payload used by the React Native MVP. */
+export function buildMockSignInSignaturePayload(
+  address: string,
+  nonce: string,
+): string {
+  return `veya-dev-signature:${address}:${nonce}`;
+}
+
 @Injectable()
 export class WalletsService {
   constructor(
@@ -39,6 +48,7 @@ export class WalletsService {
     @InjectRepository(User)
     private readonly users: Repository<User>,
     private readonly usersService: UsersService,
+    private readonly config: ConfigService,
   ) {}
 
   /** Validates and normalizes an EVM address to lower case. */
@@ -102,15 +112,17 @@ export class WalletsService {
     }
 
     const message = buildSignInMessage(address, wallet.signInNonce);
-    let recovered: string;
-    try {
-      recovered = verifyMessage(message, signature).toLowerCase();
-    } catch {
-      throw new BadRequestException('Invalid signature format');
-    }
+    if (!this.isAllowedMockSignature(signature, address, wallet.signInNonce)) {
+      let recovered: string;
+      try {
+        recovered = verifyMessage(message, signature).toLowerCase();
+      } catch {
+        throw new BadRequestException('Invalid signature format');
+      }
 
-    if (recovered !== address) {
-      throw new UnauthorizedException('Signature does not match the wallet address');
+      if (recovered !== address) {
+        throw new UnauthorizedException('Signature does not match the wallet address');
+      }
     }
 
     // One-time use: clear the nonce and stamp the connection time.
@@ -123,6 +135,24 @@ export class WalletsService {
       wallet.user = await this.usersService.findById(wallet.userId);
     }
     return { wallet, user: wallet.user };
+  }
+
+  private isAllowedMockSignature(
+    signature: string,
+    address: string,
+    nonce: string,
+  ): boolean {
+    if (!this.config.get<boolean>('walletAuth.allowMockSignature')) {
+      return false;
+    }
+
+    try {
+      const hex = signature.startsWith('0x') ? signature.slice(2) : signature;
+      const payload = Buffer.from(hex, 'hex').toString('utf8');
+      return payload === buildMockSignInSignaturePayload(address, nonce);
+    } catch {
+      return false;
+    }
   }
 
   // -------------------------------------------------------------------------

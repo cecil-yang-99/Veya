@@ -19,6 +19,11 @@ export default () => ({
     secret: process.env.JWT_SECRET ?? 'veya-dev-secret-change-me',
     expiresIn: process.env.JWT_EXPIRES_IN ?? '7d',
   },
+  walletAuth: {
+    allowMockSignature:
+      process.env.WALLET_AUTH_ALLOW_MOCK_SIGNATURE === 'true' ||
+      (process.env.NODE_ENV ?? 'development') !== 'production',
+  },
   /** Comma-separated list of origins allowed to call the API (admin console). */
   corsOrigins: (process.env.CORS_ORIGINS ?? 'http://localhost:5173')
     .split(',')

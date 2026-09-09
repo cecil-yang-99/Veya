@@ -6,7 +6,7 @@
 
 The project includes three major applications:
 
-- **App** — User-facing DApp trading application
+- **App** — User-facing DApp trading application (Expo React Native)
 - **Admin** — Platform management and administration console
 - **Backend** — API services, business logic, data management, and blockchain integration
 
@@ -59,6 +59,7 @@ High-level architecture:
 ## Frontend
 
 - React
+- React Native / Expo
 - TypeScript
 - Vite
 - React Router
@@ -143,6 +144,44 @@ Supported functionality includes:
 - Token Transfer
 - Transaction History
 - Wallet Authentication
+
+The mobile MVP uses a development-only mock wallet signature flow so local
+testing can exercise the nonce/JWT backend path without a mobile wallet SDK.
+Production wallet authentication still verifies real EVM signatures.
+
+***
+
+## Running the Mobile App
+
+The user-facing app lives in `app` and is built with Expo React Native.
+
+```bash
+# Install all workspace dependencies
+pnpm install
+
+# Start the backend API
+pnpm dev:backend
+
+# Start the mobile app
+pnpm dev:app
+```
+
+Mobile app environment:
+
+```bash
+# Defaults to http://localhost:3000/api when omitted.
+EXPO_PUBLIC_API_BASE_URL=http://localhost:3000/api
+```
+
+For physical devices, set `EXPO_PUBLIC_API_BASE_URL` to a backend URL reachable
+from the device, such as your LAN IP address.
+
+Backend development wallet-signature control:
+
+```bash
+# Enabled automatically outside production; set explicitly as needed.
+WALLET_AUTH_ALLOW_MOCK_SIGNATURE=true
+```
 
 ***
 
