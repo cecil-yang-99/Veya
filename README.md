@@ -274,6 +274,11 @@ Application Data
 
 ```
 
+The current mobile MVP uses **sandbox balances**. On first asset access, the
+backend initializes a deterministic demo portfolio and records sandbox funding
+transactions. These balances are not custody data and do not represent real
+digital assets.
+
 ***
 
 # Transactions
@@ -311,6 +316,24 @@ PENDING
    └── FAILED
 
 ```
+
+The current transaction ledger is synchronous and database-backed. RabbitMQ is
+not required for this sandbox phase because there is no real chain indexing,
+order matching, delayed settlement, or notification fanout. A future production
+phase should revisit an outbox plus RabbitMQ consumers when external blockchain
+events, withdrawals, market ingestion, or asynchronous confirmations are added.
+
+***
+
+# Market Data
+
+The current market and token catalog is seeded sandbox data:
+
+- Tokens: BTC, ETH, USDT, USDC, SOL
+- Pairs: BTC/USDT, ETH/USDT, SOL/USDT, ETH/USDC
+- Candles: deterministic 1h OHLCV samples
+
+No external market API is called in this phase.
 
 ***
 

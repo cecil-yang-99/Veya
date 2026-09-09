@@ -10,6 +10,10 @@ import { AdminUsersModule } from './admin-users/admin-users.module';
 import { KycModule } from './kyc/kyc.module';
 import { FeatureModulesModule } from './feature-modules/feature-modules.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { TokensModule } from './tokens/tokens.module';
+import { MarketsModule } from './markets/markets.module';
+import { AssetsModule } from './assets/assets.module';
+import { TransactionsModule } from './transactions/transactions.module';
 
 @Module({
   imports: [
@@ -26,6 +30,10 @@ import { DashboardModule } from './dashboard/dashboard.module';
     KycModule,
     FeatureModulesModule,
     DashboardModule,
+    TokensModule,
+    MarketsModule,
+    AssetsModule,
+    TransactionsModule,
   ],
 })
 export class AppModule {}

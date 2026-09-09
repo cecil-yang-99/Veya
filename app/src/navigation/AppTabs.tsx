@@ -1,13 +1,19 @@
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { AssetsScreen } from '../screens/AssetsScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { KycScreen } from '../screens/KycScreen';
+import { MarketsScreen } from '../screens/MarketsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
+import { TransactionsScreen } from '../screens/TransactionsScreen';
 import { WalletsScreen } from '../screens/WalletsScreen';
 import { colors } from '../theme/colors';
 
 export type AppTabParamList = {
   Home: undefined;
+  Markets: undefined;
+  Assets: undefined;
+  Transactions: undefined;
   Wallets: undefined;
   KYC: undefined;
   Profile: undefined;
@@ -35,6 +41,33 @@ export function AppTabs() {
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons color={color} name="home-outline" size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Markets"
+        component={MarketsScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons color={color} name="stats-chart-outline" size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Assets"
+        component={AssetsScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons color={color} name="pie-chart-outline" size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Transactions"
+        component={TransactionsScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons color={color} name="receipt-outline" size={size} />
           ),
         }}
       />

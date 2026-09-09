@@ -81,6 +81,40 @@ export enum FeatureModuleCode {
 }
 
 // ---------------------------------------------------------------------------
+// Sandbox trading data
+// ---------------------------------------------------------------------------
+
+export enum TokenStatus {
+  ACTIVE = 'active',
+  DISABLED = 'disabled',
+}
+
+export enum MarketStatus {
+  ACTIVE = 'active',
+  DISABLED = 'disabled',
+}
+
+export enum CandleInterval {
+  ONE_HOUR = '1h',
+}
+
+export enum TransactionType {
+  SANDBOX_FUNDING = 'sandbox_funding',
+  AIRDROP = 'airdrop',
+  DEPOSIT = 'deposit',
+  WITHDRAWAL = 'withdrawal',
+  TRANSFER = 'transfer',
+  TRADE = 'trade',
+  SWAP = 'swap',
+}
+
+export enum TransactionStatus {
+  PENDING = 'pending',
+  SUCCESS = 'success',
+  FAILED = 'failed',
+}
+
+// ---------------------------------------------------------------------------
 // Audit log
 // ---------------------------------------------------------------------------
 

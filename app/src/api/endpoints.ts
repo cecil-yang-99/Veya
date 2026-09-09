@@ -1,9 +1,16 @@
 import { KycDocumentType } from '@veya/shared';
 import { apiRequest } from './client';
 import type {
+  AssetBalanceRecord,
+  AssetSummary,
   FeatureModuleRecord,
   KycSubmissionRecord,
+  MarketCandleRecord,
+  MarketPairRecord,
+  Paginated,
+  TokenRecord,
   UserProfile,
+  UserTransactionRecord,
   WalletRecord,
 } from './types';
 
@@ -105,4 +112,53 @@ export async function submitKyc(input: KycSubmissionInput) {
     method: 'POST',
     body: formData,
   });
+}
+
+export async function fetchTokens() {
+  return apiRequest<TokenRecord[]>('/v1/tokens', { auth: false });
+}
+
+export async function fetchToken(symbol: string) {
+  return apiRequest<TokenRecord>(`/v1/tokens/${encodeURIComponent(symbol)}`, {
+    auth: false,
+  });
+}
+
+export async function fetchMarkets() {
+  return apiRequest<MarketPairRecord[]>('/v1/markets', { auth: false });
+}
+
+export async function fetchMarket(symbol: string) {
+  return apiRequest<MarketPairRecord>(`/v1/markets/${marketPathSymbol(symbol)}`, {
+    auth: false,
+  });
+}
+
+export async function fetchMarketCandles(symbol: string, limit = 24) {
+  return apiRequest<MarketCandleRecord[]>(
+    `/v1/markets/${marketPathSymbol(symbol)}/candles?interval=1h&limit=${limit}`,
+    { auth: false },
+  );
+}
+
+export async function fetchAssets() {
+  return apiRequest<AssetBalanceRecord[]>('/v1/assets');
+}
+
+export async function fetchAssetSummary() {
+  return apiRequest<AssetSummary>('/v1/assets/summary');
+}
+
+export async function fetchTransactions(page = 1, pageSize = 20) {
+  return apiRequest<Paginated<UserTransactionRecord>>(
+    `/v1/transactions?page=${page}&pageSize=${pageSize}`,
+  );
+}
+
+export async function fetchTransaction(id: string) {
+  return apiRequest<UserTransactionRecord>(`/v1/transactions/${id}`);
+}
+
+function marketPathSymbol(symbol: string): string {
+  return encodeURIComponent(symbol.replace('/', '-'));
 }

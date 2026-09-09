@@ -6,6 +6,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { KycLevel, KycStatus, UserStatus } from '@veya/shared';
+import { AssetBalance } from '../assets/entities/asset-balance.entity';
+import { UserTransaction } from '../transactions/entities/user-transaction.entity';
 import { User } from './entities/user.entity';
 import { Wallet } from '../wallets/entities/wallet.entity';
 import { KycSubmission } from '../kyc/entities/kyc-submission.entity';
@@ -16,6 +18,9 @@ import { AdminListUsersQueryDto } from './dto/admin-users-query.dto';
 
 export interface UserDetail extends User {
   wallets: Wallet[];
+  assets: AssetBalance[];
+  transactions: UserTransaction[];
+  kycSubmissions: KycSubmission[];
   latestKyc: KycSubmission | null;
 }
 
@@ -32,6 +37,10 @@ export class UsersService {
     private readonly wallets: Repository<Wallet>,
     @InjectRepository(KycSubmission)
     private readonly kycSubmissions: Repository<KycSubmission>,
+    @InjectRepository(AssetBalance)
+    private readonly assetBalances: Repository<AssetBalance>,
+    @InjectRepository(UserTransaction)
+    private readonly transactions: Repository<UserTransaction>,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -107,17 +116,35 @@ export class UsersService {
 
   async getDetail(id: string): Promise<UserDetail> {
     const user = await this.findById(id);
-    const [wallets, latestKyc] = await Promise.all([
+    const [wallets, kycSubmissions, assets, transactions] = await Promise.all([
       this.wallets.find({
         where: { userId: id },
         order: { isPrimary: 'DESC', createdAt: 'DESC' },
       }),
-      this.kycSubmissions.findOne({
+      this.kycSubmissions.find({
         where: { userId: id },
         order: { createdAt: 'DESC' },
       }),
+      this.assetBalances.find({
+        where: { userId: id },
+        relations: { token: true },
+        order: { estimatedUsdValue: 'DESC' },
+      }),
+      this.transactions.find({
+        where: { userId: id },
+        relations: { fromToken: true, toToken: true, wallet: true },
+        order: { createdAt: 'DESC' },
+        take: 50,
+      }),
     ]);
-    return { ...user, wallets, latestKyc };
+    return {
+      ...user,
+      wallets,
+      assets,
+      transactions,
+      kycSubmissions,
+      latestKyc: kycSubmissions[0] ?? null,
+    };
   }
 
   async setStatus(id: string, status: UserStatus): Promise<User> {

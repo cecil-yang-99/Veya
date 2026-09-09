@@ -47,6 +47,9 @@ export interface WalletRecord {
 
 export interface UserDetail extends UserRecord {
   wallets: WalletRecord[];
+  assets: AssetBalanceRecord[];
+  transactions: UserTransactionRecord[];
+  kycSubmissions: KycSubmissionRecord[];
   latestKyc: KycSubmissionRecord | null;
 }
 
@@ -78,6 +81,62 @@ export interface FeatureModuleRecord {
   isEnabled: boolean;
   sortOrder: number;
   isSystem: boolean;
+}
+
+export interface TokenRecord {
+  id: string;
+  symbol: string;
+  name: string;
+  chain: string;
+  contractAddress: string | null;
+  decimals: number;
+  logoUrl: string | null;
+  status: 'active' | 'disabled';
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AssetBalanceRecord {
+  id: string;
+  userId: string;
+  tokenId: string;
+  token: TokenRecord;
+  available: string;
+  frozen: string;
+  estimatedUsdValue: string;
+  source: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserTransactionRecord {
+  id: string;
+  userId: string;
+  walletId: string | null;
+  wallet?: WalletRecord | null;
+  type:
+    | 'sandbox_funding'
+    | 'airdrop'
+    | 'deposit'
+    | 'withdrawal'
+    | 'transfer'
+    | 'trade'
+    | 'swap';
+  status: 'pending' | 'success' | 'failed';
+  assetBalanceId: string | null;
+  fromTokenId: string | null;
+  fromToken?: TokenRecord | null;
+  toTokenId: string | null;
+  toToken?: TokenRecord | null;
+  fromAmount: string | null;
+  toAmount: string | null;
+  usdValue: string;
+  txHash: string | null;
+  network: string | null;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AdminUserRecord {
