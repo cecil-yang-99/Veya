@@ -24,8 +24,11 @@ export default () => ({
       process.env.WALLET_AUTH_ALLOW_MOCK_SIGNATURE === 'true' ||
       (process.env.NODE_ENV ?? 'development') !== 'production',
   },
-  /** Comma-separated list of origins allowed to call the API (admin console). */
-  corsOrigins: (process.env.CORS_ORIGINS ?? 'http://localhost:5173')
+  /** Comma-separated list of origins allowed to call the API locally. */
+  corsOrigins: (
+    process.env.CORS_ORIGINS ??
+    'http://localhost:5173,http://localhost:8081,http://localhost:19006'
+  )
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean),

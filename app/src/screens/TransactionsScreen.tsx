@@ -1,16 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
-import { RefreshControl, ScrollView, Text, View } from 'react-native';
+import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { fetchTransactions } from '../api/endpoints';
 import type { UserTransactionRecord } from '../api/types';
-import { PrimaryButton } from '../components/PrimaryButton';
+import type { TransactionsStackParamList } from '../navigation/AppTabs';
 import { ScreenError } from '../components/ScreenState';
 import { colors } from '../theme/colors';
 import { styles } from '../theme/styles';
-import { formatToken, formatUsd } from '../utils/format';
+import { formatToken } from '../utils/format';
 
-export function TransactionsScreen() {
+type Props = NativeStackScreenProps<TransactionsStackParamList, 'TransactionsList'>;
+
+export function TransactionsScreen({ navigation }: Props) {
   const [transactions, setTransactions] = useState<UserTransactionRecord[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -46,9 +48,15 @@ export function TransactionsScreen() {
       {transactions.map((transaction) => {
         const token = transaction.toToken ?? transaction.fromToken;
         const amount = transaction.toAmount ?? transaction.fromAmount ?? '0';
-        const expanded = selectedId === transaction.id;
         return (
-          <View key={transaction.id} style={styles.card}>
+          <Pressable
+            key={transaction.id}
+            onPress={() => navigation.navigate('TransactionDetail', { id: transaction.id })}
+            style={({ pressed }) => [
+              styles.card,
+              { opacity: pressed ? 0.75 : 1 },
+            ]}
+          >
             <View style={styles.row}>
               <View>
                 <Text style={styles.value}>{transaction.type}</Text>
@@ -61,22 +69,7 @@ export function TransactionsScreen() {
                 <Text style={{ color: colors.success }}>{transaction.status}</Text>
               </View>
             </View>
-            {expanded ? (
-              <View style={{ marginTop: 12 }}>
-                <Text style={styles.label}>USD value</Text>
-                <Text style={styles.value}>{formatUsd(transaction.usdValue)}</Text>
-                <Text style={styles.label}>Network</Text>
-                <Text style={styles.value}>{transaction.network ?? '-'}</Text>
-              </View>
-            ) : null}
-            <View style={{ height: 12 }} />
-            <PrimaryButton
-              variant="secondary"
-              onPress={() => setSelectedId(expanded ? null : transaction.id)}
-            >
-              {expanded ? 'Hide details' : 'View details'}
-            </PrimaryButton>
-          </View>
+          </Pressable>
         );
       })}
     </ScrollView>

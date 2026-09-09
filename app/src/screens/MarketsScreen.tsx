@@ -1,17 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
-import { RefreshControl, ScrollView, Text, View } from 'react-native';
-import { fetchMarketCandles, fetchMarkets } from '../api/endpoints';
-import type { MarketCandleRecord, MarketPairRecord } from '../api/types';
-import { PrimaryButton } from '../components/PrimaryButton';
+import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { fetchMarkets } from '../api/endpoints';
+import type { MarketPairRecord } from '../api/types';
+import type { MarketsStackParamList } from '../navigation/AppTabs';
 import { ScreenError } from '../components/ScreenState';
 import { colors } from '../theme/colors';
 import { styles } from '../theme/styles';
 import { formatPercent, formatUsd } from '../utils/format';
 
-export function MarketsScreen() {
+type Props = NativeStackScreenProps<MarketsStackParamList, 'MarketsList'>;
+
+export function MarketsScreen({ navigation }: Props) {
   const [markets, setMarkets] = useState<MarketPairRecord[]>([]);
-  const [selected, setSelected] = useState<MarketPairRecord | null>(null);
-  const [candles, setCandles] = useState<MarketCandleRecord[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -25,15 +26,6 @@ export function MarketsScreen() {
       setError(err instanceof Error ? err.message : 'Unable to load markets');
     });
   }, [load]);
-
-  async function selectMarket(market: MarketPairRecord) {
-    setSelected(market);
-    try {
-      setCandles(await fetchMarketCandles(market.symbol, 12));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unable to load candles');
-    }
-  }
 
   async function refresh() {
     setRefreshing(true);
@@ -55,7 +47,14 @@ export function MarketsScreen() {
       {markets.map((market) => {
         const positive = Number(market.change24h) >= 0;
         return (
-          <View key={market.id} style={styles.card}>
+          <Pressable
+            key={market.id}
+            onPress={() => navigation.navigate('MarketDetail', { symbol: market.symbol })}
+            style={({ pressed }) => [
+              styles.card,
+              { opacity: pressed ? 0.75 : 1 },
+            ]}
+          >
             <View style={styles.row}>
               <View>
                 <Text style={styles.value}>{market.symbol}</Text>
@@ -68,24 +67,9 @@ export function MarketsScreen() {
                 </Text>
               </View>
             </View>
-            <View style={{ height: 12 }} />
-            <PrimaryButton variant="secondary" onPress={() => void selectMarket(market)}>
-              View candles
-            </PrimaryButton>
-          </View>
+          </Pressable>
         );
       })}
-      {selected ? (
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>{selected.symbol} candles</Text>
-          {candles.map((candle) => (
-            <View key={candle.id} style={[styles.row, { marginBottom: 8 }]}>
-              <Text style={styles.label}>{new Date(candle.openedAt).toLocaleString()}</Text>
-              <Text style={styles.value}>{formatUsd(candle.close)}</Text>
-            </View>
-          ))}
-        </View>
-      ) : null}
     </ScrollView>
   );
 }

@@ -183,6 +183,12 @@ Backend development wallet-signature control:
 WALLET_AUTH_ALLOW_MOCK_SIGNATURE=true
 ```
 
+Local browser/mobile-web development origins are allowed by default:
+
+```bash
+CORS_ORIGINS=http://localhost:5173,http://localhost:8081,http://localhost:19006
+```
+
 ***
 
 # Trading
