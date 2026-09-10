@@ -1,675 +1,100 @@
 # Veya
 
-> A modern virtual DApp trading platform built with TypeScript.
+> A TypeScript full-stack virtual DApp trading platform.
 
-**Veya** is a full-stack virtual DApp trading platform designed to simulate and explore the architecture of modern Web3 trading applications.
+Veya is a development and learning project for building a Web3-style trading
+product with a mobile app, an admin console, and a NestJS backend. The current
+version focuses on local sandbox workflows: wallet authentication, demo market
+data, user assets, transaction records, KYC flows, and admin operations.
 
-The project includes three major applications:
+## Preview
 
-- **App** — User-facing DApp trading application
-- **Admin** — Platform management and administration console
-- **Backend** — API services, business logic, data management, and blockchain integration
+### Admin Console
 
-The entire platform is built with **TypeScript**, with **React** for frontend applications and **NestJS** for backend services.
+![Veya admin dashboard](image/截屏2026-09-10%2016.06.58.png)
 
-***
+![Veya admin management view](image/截屏2026-09-10%2016.07.36.png)
 
-## Project Architecture
+### Mobile App
 
-```
-Veya
-├── app          # User-facing DApp
-├── admin        # Admin management platform
-└── backend      # Backend API and business services
+![Veya mobile markets screen](image/截屏2026-09-10%2016.12.19.png)
 
-```
+![Veya mobile assets screen](image/截屏2026-09-10%2016.12.29.png)
 
-High-level architecture:
+## Applications
 
-```
-                    ┌─────────────────────┐
-                    │        Veya         │
-                    │    DApp Trading     │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │       Backend       │
-                    │    NestJS + TS      │
-                    └──────────┬──────────┘
-                               │
-               ┌───────────────┼────────────────┐
-               │               │                │
-               ▼               ▼                ▼
-          PostgreSQL         Redis          Blockchain
-                                            Networks
-               ▲
-               │
-        ┌──────┴───────┐
-        │     Admin    │
-        │  React + TS  │
-        └──────────────┘
+- `app` - user-facing Expo React Native app
+- `admin` - React + Vite admin console
+- `backend` - NestJS API with TypeORM and PostgreSQL
+- `packages/shared` - shared TypeScript package for cross-app contracts
 
-```
+## Stack
 
-***
-
-# Technology Stack
-
-## Frontend
-
-- React
 - TypeScript
-- Vite
-- React Router
-- Ant Design
-- Web3 / Ethers.js
-- Wallet integration
-
-## Backend
-
-- NestJS
-- TypeScript
+- React, React Native, Expo
+- Vite, Ant Design, Ant Design Pro Components
+- NestJS, TypeORM
 - PostgreSQL
-- Redis
-- REST API
-- WebSocket
-- JWT Authentication
+- Docker Compose
 
-## Blockchain
+## Local Docker Start
 
-- Ethereum
-- EVM-compatible networks
-- Smart Contracts
-- Wallets
-- Tokens
-- Blockchain Transactions
-- On-chain / Off-chain data synchronization
+Build images and start the full local stack:
 
-## Admin
-
-- React
-- TypeScript
-- Ant Design
-- ProComponents
-- Data Tables
-- User Management
-- Transaction Management
-- Token Management
-- Risk Management
-- System Configuration
-
-***
-
-# Project Goals
-
-Veya is designed to go beyond a simple token swap interface.
-
-The project aims to simulate the architecture and business workflows of a complete Web3 trading platform.
-
-Key areas include:
-
-- DApp architecture
-- Wallet integration
-- Blockchain transactions
-- Token transfers
-- Token swaps
-- Trading workflows
-- User accounts
-- Asset management
-- Transaction history
-- Backend API architecture
-- Admin management
-- Authentication
-- Risk control
-- Blockchain event processing
-- On-chain / Off-chain data synchronization
-
-***
-
-# Core Features
-
-## Wallet
-
-Users can connect their Web3 wallets to Veya.
-
-Supported functionality includes:
-
-- Connect Wallet
-- Wallet Address
-- Network Detection
-- Native Token Balance
-- ERC-20 Token Balance
-- Token Transfer
-- Transaction History
-- Wallet Authentication
-
-***
-
-# Trading
-
-Veya provides a virtual DApp trading experience.
-
-Example trading pairs:
-
-```
-ETH  → USDT
-USDT → ETH
-ETH  → USDC
-USDC → ETH
-
+```bash
+docker compose up --build -d
 ```
 
-Typical trading flow:
+Local URLs:
 
-```
-User
- │
- ▼
-Connect Wallet
- │
- ▼
-Select Token
- │
- ▼
-Enter Amount
- │
- ▼
-Request Quote
- │
- ▼
-Confirm Trade
- │
- ▼
-Create Transaction
- │
- ▼
-Blockchain
- │
- ▼
-Transaction Confirmation
- │
- ▼
-Update Assets
+- Backend API docs: http://127.0.0.1:3002/api/docs
+- Admin console: http://127.0.0.1:5173
+- App web preview: http://127.0.0.1:8081
+- PostgreSQL: `127.0.0.1:55432`
 
+Seeded admin account:
+
+```txt
+Username: superadmin
+Password: Admin@123456
 ```
 
-***
+Stop the stack:
 
-# Asset Management
-
-Veya maintains user asset information and balances.
-
-Example:
-
-```
-User
-│
-├── ETH
-│   └── Balance
-│
-├── USDT
-│   └── Balance
-│
-├── USDC
-│   └── Balance
-│
-└── Other Tokens
-    └── Balance
-
+```bash
+docker compose down
 ```
 
-The system distinguishes between different data sources:
+## Local Package Scripts
 
-```
-On-chain Balance
-       │
-       ▼
-Blockchain Indexer
-       │
-       ▼
-Backend
-       │
-       ▼
-Application Data
-
+```bash
+pnpm install
+pnpm dev:backend
+pnpm dev:admin
+pnpm dev:app
 ```
 
-***
+Useful checks:
 
-# Transactions
-
-Veya records user trading and blockchain transaction information.
-
-Example transaction model:
-
-```
-Transaction
-├── id
-├── userId
-├── walletAddress
-├── type
-├── fromToken
-├── toToken
-├── fromAmount
-├── toAmount
-├── status
-├── txHash
-├── network
-├── gasFee
-├── createdAt
-└── updatedAt
-
+```bash
+pnpm typecheck
+pnpm build
 ```
 
-Transaction lifecycle:
+## Current Sandbox Behavior
 
-```
-PENDING
-   │
-   ├── SUCCESS
-   │
-   └── FAILED
+The app uses a development-only mock wallet signature flow so local testing can
+exercise the backend nonce/JWT path without a mobile wallet SDK. Sandbox assets,
+market prices, candles, and transactions are seeded demo data and do not
+represent real funds or financial services.
 
-```
+## More Detail
 
-***
+The implementation roadmap and engineering notes live in
+[DEVELOP_PLAN.md](./DEVELOP_PLAN.md).
 
-# User Management
+## Disclaimer
 
-The user system manages:
-
-- User accounts
-- Wallets
-- Wallet addresses
-- Authentication
-- Assets
-- Transactions
-- Trading history
-- Account status
-
-Users can authenticate and interact with Veya through their Web3 wallets.
-
-***
-
-# Admin Platform
-
-The Admin application provides management tools for the entire Veya platform.
-
-## Dashboard
-
-- Total Users
-- Active Users
-- Trading Volume
-- Transaction Count
-- Trading Statistics
-- System Status
-
-## User Management
-
-- User List
-- User Details
-- Wallet Information
-- Asset Information
-- Trading History
-- Transaction History
-- Account Status
-
-## Transaction Management
-
-- Transaction List
-- Transaction Details
-- Transaction Status
-- Transaction Hash
-- Network
-- Failed Transactions
-
-## Token Management
-
-- Token List
-- Token Symbol
-- Contract Address
-- Decimals
-- Network
-- Token Status
-
-## Network Management
-
-- Supported Networks
-- RPC Configuration
-- Chain ID
-- Network Status
-
-## System Configuration
-
-- Trading Configuration
-- Fee Configuration
-- Token Configuration
-- Feature Flags
-- Platform Settings
-
-***
-
-# Backend Architecture
-
-The backend is built with **NestJS + TypeScript**.
-
-The application follows a modular architecture:
-
-```
-backend
-├── auth
-├── users
-├── wallets
-├── assets
-├── tokens
-├── transactions
-├── trading
-├── blockchain
-├── networks
-├── admin
-└── common
-
-```
-
-Each business domain is isolated into its own module to improve maintainability and scalability.
-
-***
-
-# Application Modules
-
-## App
-
-```
-app
-├── wallet
-├── home
-├── trade
-├── swap
-├── assets
-├── transactions
-├── profile
-└── settings
-
-```
-
-## Admin
-
-```
-admin
-├── dashboard
-├── users
-├── wallets
-├── assets
-├── transactions
-├── trading
-├── tokens
-├── networks
-├── settings
-└── system
-
-```
-
-## Backend
-
-```
-backend
-├── auth
-├── users
-├── wallets
-├── assets
-├── transactions
-├── trading
-├── blockchain
-├── tokens
-├── networks
-└── admin
-
-```
-
-***
-
-# Security
-
-Veya will simulate common security mechanisms used by modern Web3 applications.
-
-Security considerations include:
-
-- JWT Authentication
-- Wallet Signature Authentication
-- Role-Based Access Control
-- API Authentication
-- Request Validation
-- Rate Limiting
-- Transaction Validation
-- Permission Management
-- Secure API Design
-
-Private keys should never be stored or managed by the backend unless a dedicated custody architecture is explicitly introduced.
-
-***
-
-# Testing
-
-Testing will be introduced throughout the project lifecycle.
-
-## Backend
-
-- Unit Tests
-- Integration Tests
-- API Tests
-- E2E Tests
-
-Important areas:
-
-```
-Controller
-Service
-Repository
-Trading Logic
-Transaction Logic
-Blockchain Logic
-
-```
-
-## Frontend
-
-- Component Tests
-- Hook Tests
-- API Tests
-- User Flow Tests
-- E2E Tests
-
-***
-
-# Development Roadmap
-
-## Phase 1 — Foundation
-
-- Monorepo Setup
-- Backend Setup
-- Admin Setup
-- App Setup
-- Database Setup
-- Authentication
-- User System
-
-## Phase 2 — Wallet
-
-- Wallet Connection
-- Wallet Authentication
-- Wallet Address
-- Token Balances
-- Network Detection
-
-## Phase 3 — Trading
-
-- Token List
-- Trading Pairs
-- Price Quotes
-- Swap
-- Transaction Creation
-- Transaction History
-
-## Phase 4 — Admin
-
-- Dashboard
-- User Management
-- Transaction Management
-- Token Management
-- Network Management
-- System Configuration
-
-## Phase 5 — Blockchain
-
-- RPC Integration
-- Smart Contract Integration
-- Blockchain Event Listener
-- Transaction Indexer
-- On-chain Data Synchronization
-- Transaction Confirmation
-
-## Phase 6 — Production Architecture
-
-- Redis
-- Message Queue
-- WebSocket
-- Rate Limiting
-- Monitoring
-- Structured Logging
-- Error Tracking
-- CI/CD
-
-***
-
-# Development Principles
-
-## TypeScript First
-
-The entire project is written primarily in TypeScript.
-
-```
-React
-  │
-  ▼
-TypeScript
-  │
-  ▼
-NestJS
-  │
-  ▼
-TypeScript
-
-```
-
-## API First
-
-Frontend applications communicate with the backend through clearly defined API contracts.
-
-```
-App / Admin
-     │
-     ▼
-   REST API
-     │
-     ▼
-   Backend
-     │
-     ├── Database
-     │
-     └── Blockchain
-
-```
-
-## Modular Architecture
-
-Business domains should remain isolated and independently maintainable.
-
-## Separation of Concerns
-
-The system separates:
-
-```
-Controller
-    ↓
-Service
-    ↓
-Repository
-    ↓
-Domain Logic
-    ↓
-Infrastructure
-
-```
-
-Blockchain-related operations are separated from traditional application business logic wherever possible.
-
-***
-
-# Learning Objectives
-
-Veya is also a practical project for learning modern full-stack and Web3 development.
-
-The project aims to build a complete understanding of:
-
-```
-React
-  ↓
-API
-  ↓
-NestJS
-  ↓
-Database
-  ↓
-Blockchain
-  ↓
-Smart Contract
-
-```
-
-As well as the lifecycle of a Web3 trading application:
-
-```
-User
- ↓
-Wallet
- ↓
-Trade
- ↓
-Transaction
- ↓
-Blockchain
- ↓
-Indexer
- ↓
-Backend
- ↓
-Admin
-
-```
-
-The ultimate goal is to build a complete **Full-Stack Web3 DApp Trading Platform** using modern TypeScript technologies.
-
-***
-
-# Project Status
-
-Veya is currently under active development.
-
-The project is being built incrementally, starting from the core application architecture and gradually introducing trading, blockchain, administration, and infrastructure capabilities.
-
-***
-
-# Disclaimer
-
-Veya is a development and educational project.
-
-Trading functionality, asset balances, prices, and other financial data may use simulated data and should not be considered real financial services.
-
-Any future integration with real digital assets, fiat payments, custody services, or financial transactions would require appropriate security, compliance, KYC/AML, regulatory, and legal considerations.
-
-***
-
-# License
-
-This project is intended for educational, research, and development purposes.
+Veya is an educational and development project. Any future integration with real
+digital assets, fiat payments, custody, KYC/AML, or financial transactions would
+require production-grade security, compliance, regulatory, and legal review.

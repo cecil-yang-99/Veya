@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "Veya",
+    "slug": "veya",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "veya",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "backgroundColor": "#0B1020"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0B1020"
+      }
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}

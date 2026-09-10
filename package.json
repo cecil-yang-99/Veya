@@ -1,0 +1,23 @@
+{
+  "name": "veya",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Veya — a virtual DApp trading platform (monorepo)",
+  "license": "MIT",
+  "packageManager": "pnpm@10.20.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "pnpm --filter @veya/shared build && pnpm --filter @veya/backend build && pnpm --filter @veya/admin build && pnpm --filter @veya/app typecheck",
+    "build:backend": "pnpm --filter @veya/backend build",
+    "build:admin": "pnpm --filter @veya/admin build",
+    "build:app": "pnpm --filter @veya/app typecheck",
+    "dev:backend": "pnpm --filter @veya/backend start:dev",
+    "dev:admin": "pnpm --filter @veya/admin dev",
+    "dev:app": "pnpm --filter @veya/app start",
+    "typecheck": "pnpm --filter @veya/shared build && pnpm --filter @veya/backend typecheck && pnpm --filter @veya/admin typecheck && pnpm --filter @veya/app typecheck",
+    "migration:run": "pnpm --filter @veya/backend migration:run",
+    "seed": "pnpm --filter @veya/backend seed"
+  }
+}

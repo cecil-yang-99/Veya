@@ -1,0 +1,11 @@
+.git
+.docker-data
+node_modules
+*/node_modules
+*/dist
+*/.expo
+dist
+coverage
+.DS_Store
+.env
+*.log

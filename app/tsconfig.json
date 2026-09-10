@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "declaration": false,
+    "jsx": "react-native",
+    "lib": ["ES2022", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "strictPropertyInitialization": false,
+    "types": ["react"]
+  },
+  "include": ["App.tsx", "src/**/*.ts", "src/**/*.tsx"]
+}
