@@ -1,5 +1,5 @@
-# Local development infrastructure for Veya.
-# Usage: docker compose up -d postgres
+# Local development stack for Veya.
+# Usage: docker compose up --build -d
 services:
   postgres:
     image: postgres:16-alpine
@@ -10,14 +10,79 @@ services:
       POSTGRES_PASSWORD: veya_dev_password
       POSTGRES_DB: veya
     ports:
-      - '5432:5432'
+      - '55432:5432'
     volumes:
-      - ./.docker-data/postgres:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U veya -d veya']
       interval: 5s
       timeout: 5s
       retries: 10
+
+  backend:
+    image: veya-backend:local
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: veya-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PORT: 3000
+      NODE_ENV: development
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: veya
+      DB_PASSWORD: veya_dev_password
+      DB_NAME: veya
+      JWT_SECRET: change-me-in-production
+      JWT_EXPIRES_IN: 7d
+      CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173,http://localhost:8081,http://127.0.0.1:8081,http://localhost:19006,http://127.0.0.1:19006
+      WALLET_AUTH_ALLOW_MOCK_SIGNATURE: 'true'
+      SEED_ADMIN_USERNAME: superadmin
+      SEED_ADMIN_PASSWORD: Admin@123456
+      SEED_ADMIN_EMAIL: admin@veya.local
+    ports:
+      - '3002:3000'
+    volumes:
+      - backend-uploads:/workspace/backend/uploads
+    command: >
+      sh -c "pnpm --filter @veya/backend migration:run &&
+             pnpm --filter @veya/backend seed &&
+             pnpm --filter @veya/backend start:prod"
+
+  admin:
+    image: veya-admin:local
+    build:
+      context: .
+      dockerfile: admin/Dockerfile
+    container_name: veya-admin
+    depends_on:
+      - backend
+    environment:
+      VITE_API_BASE_URL: /api
+      VITE_BACKEND_PROXY_TARGET: http://backend:3000
+    ports:
+      - '5173:5173'
+
+  app:
+    image: veya-app:local
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    container_name: veya-app
+    depends_on:
+      - backend
+    environment:
+      EXPO_PUBLIC_API_BASE_URL: http://localhost:3002/api
+      EXPO_NO_TELEMETRY: '1'
+    ports:
+      - '8081:8081'
+      - '19000:19000'
+      - '19001:19001'
+      - '19002:19002'
+      - '19006:19006'
 
   # Redis is reserved for later phases (caching, queues, rate limiting).
   # It is not required by the current backend modules.
@@ -29,3 +94,7 @@ services:
       - '6379:6379'
     profiles:
       - full
+
+volumes:
+  postgres-data:
+  backend-uploads:

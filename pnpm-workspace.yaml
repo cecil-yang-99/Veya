@@ -3,3 +3,8 @@ packages:
   - 'backend'
   - 'admin'
   - 'app'
+
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - '@scarf/scarf'
+  - esbuild
